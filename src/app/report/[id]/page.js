@@ -344,13 +344,14 @@ export default function Report({ params }) {
 
       setAssessment(assessmentData);
 
-      // Fetch questions filtered by the assessment's framework
+      // Fetch questions filtered by the assessment's framework and valid domains
       const fw = assessmentData.framework || 'SDLC';
+      const validAreas = fw === 'AMS' ? AMS_AREA_LABELS : SDLC_AREA_LABELS;
       try {
         const qRes = await fetch(`/api/questions?framework=${fw}`);
         if (qRes.ok) {
           const qData = await qRes.json();
-          setQuestions(qData.questions || []);
+          setQuestions((qData.questions || []).filter(q => validAreas.includes(q.area)));
         }
       } catch (_) {}
 

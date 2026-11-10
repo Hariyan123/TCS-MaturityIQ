@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -130,12 +130,17 @@ function getDomainDiagram(name) {
 
 export default function SDLCPage() {
   const { user } = useAuth();
-  const [sdlcCount, setSdlcCount] = useState(null);
+  const [sdlcCount, setSdlcCount] = useState(25);
 
   useEffect(() => {
+    const validAreas = AREAS.map(a => a.name);
     fetch('/api/questions?framework=SDLC', { cache: 'no-store' })
       .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d?.questions?.length) setSdlcCount(d.questions.length); })
+      .then(d => {
+        if (d?.questions?.length) {
+          setSdlcCount(d.questions.filter(q => validAreas.includes(q.area)).length);
+        }
+      })
       .catch(() => { });
   }, []);
 

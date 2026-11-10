@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -32,8 +32,8 @@ const LEVELS = [
 export default function Home() {
   const { user } = useAuth();
   const [activeFramework, setActiveFramework] = useState('SDLC');
-  const [sdlcCount, setSdlcCount] = useState(120);
-  const [amsCount, setAmsCount] = useState(10);
+  const [sdlcCount, setSdlcCount] = useState(25);
+  const [amsCount, setAmsCount] = useState(25);
 
   useEffect(() => {
     async function fetchCounts() {
@@ -42,8 +42,18 @@ export default function Home() {
           fetch('/api/questions?framework=SDLC', { cache: 'no-store' }),
           fetch('/api/questions?framework=AMS', { cache: 'no-store' }),
         ]);
-        if (r1.ok) { const d = await r1.json(); setSdlcCount(d.questions?.length || 120); }
-        if (r2.ok) { const d = await r2.json(); setAmsCount(d.questions?.length || 10); }
+        const validSdlcAreas = SDLC_AREAS.map(a => a.name);
+        const validAmsAreas = AMS_AREAS.map(a => a.name);
+        if (r1.ok) {
+          const d = await r1.json();
+          const filtered = (d.questions || []).filter(q => validSdlcAreas.includes(q.area));
+          setSdlcCount(filtered.length || 25);
+        }
+        if (r2.ok) {
+          const d = await r2.json();
+          const filtered = (d.questions || []).filter(q => validAmsAreas.includes(q.area));
+          setAmsCount(filtered.length || 25);
+        }
       } catch (_) { }
     }
     fetchCounts();

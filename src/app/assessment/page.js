@@ -224,7 +224,11 @@ function AssessmentInner() {
       const res = await fetch(`/api/questions?framework=${fw}`);
       if (res.ok) {
         const d = await res.json();
-        setQuestions(d.questions || []);
+        const validAreas = FRAMEWORK_META[fw]?.areas || [];
+        const filtered = validAreas.length > 0
+          ? (d.questions || []).filter(q => validAreas.includes(q.area))
+          : (d.questions || []);
+        setQuestions(filtered);
       }
     } catch (err) { console.error('Error loading questions:', err); }
     finally { setLoading(false); }
